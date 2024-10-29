@@ -16,8 +16,8 @@ Public Class Form1
 
         Dim isActive As Boolean = CheckBoxActive.Checked
 
-        Using con As SqlConnection = New SqlConnection(connectionString)
-            Dim cmd As SqlCommand = New SqlCommand("INSERT INTO mst_PtType (PtType, IsActive) VALUES (@PtType, @IsActive)", con)
+        Using con As New SqlConnection(connectionString)
+            Dim cmd As New SqlCommand("INSERT INTO mst_PtType (PtType, IsActive) VALUES (@PtType, @IsActive)", con)
             cmd.Parameters.AddWithValue("@PtType", txtPtType.Text)
             cmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
             Try
@@ -42,8 +42,8 @@ Public Class Form1
 
     Private Sub LoadDataGridView()
         Using con As New SqlConnection(connectionString)
-            ' Selecting only active records
-            Dim query As String = "SELECT * FROM mst_PtType WHERE IsActive = 1"
+            ' Selecting all records (including both active and inactive)
+            Dim query As String = "SELECT * FROM mst_PtType where isActive = 1"
             Dim cmd As New SqlCommand(query, con)
             Dim adapter As New SqlDataAdapter(cmd)
             Dim table As New DataTable()
@@ -89,7 +89,7 @@ Public Class Form1
 
         Dim isActive As Boolean = CheckBoxActive.Checked
         Using con As New SqlConnection(connectionString)
-            Dim cmd As SqlCommand = New SqlCommand("UPDATE mst_PtType SET PtType = @PtType, IsActive = @IsActive WHERE PtTypeId = @PtTypeId", con)
+            Dim cmd As New SqlCommand("UPDATE mst_PtType SET PtType = @PtType, IsActive = @IsActive WHERE PtTypeId = @PtTypeId", con)
             cmd.Parameters.AddWithValue("@PtType", txtPtType.Text)
             cmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
             cmd.Parameters.AddWithValue("@PtTypeId", selectedPtTypeId)
@@ -116,19 +116,23 @@ Public Class Form1
         If e.RowIndex >= 0 Then
             Dim selectedRow As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
 
+            ' Display the PtType in txtPtType
             txtPtType.Text = selectedRow.Cells("PtType").Value.ToString()
+
+            ' Update selectedPtTypeId for further operations
             selectedPtTypeId = CInt(selectedRow.Cells("PtTypeId").Value)
 
-            ' Set the checkboxes based on the active status
-            Dim isActive As Integer = CInt(selectedRow.Cells("IsActive").Value)
-            CheckBoxActive.Checked = (isActive = 1) ' True if Active
-            CheckBoxDeactive.Checked = (isActive = 0) ' False if Deactive
+            ' Update checkboxes based on the active status
+            Dim isActive As Boolean = CBool(selectedRow.Cells("IsActive").Value)
+            CheckBoxActive.Checked = isActive
+            CheckBoxDeactive.Checked = Not isActive
         End If
     End Sub
 
     Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click
         Me.Close()
     End Sub
+
     Private Sub CheckBoxActive_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxActive.CheckedChanged
         If CheckBoxActive.Checked Then
             CheckBoxDeactive.Checked = False

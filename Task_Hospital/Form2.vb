@@ -80,7 +80,7 @@ Public Class Form2
     Private Sub LoadDataGridView()
         Using con As New SqlConnection(connectionString)
             Dim query As String = "SELECT d.Id, " &
-                              "CASE WHEN d.OpIpType = 1 THEN 'OPD' ELSE 'IPD' END AS OpIpType, " &
+                              "IIF(d.OpIpType = 1, 'OPD', 'IPD') AS OpIpType, " &
                               "p.PtType AS PatientType, " &
                               "p.PtTypeId, " &
                               "d.Discount, " &
@@ -95,6 +95,7 @@ Public Class Form2
             Try
                 con.Open()
                 adapter.Fill(table)
+
                 ' Add a Sr.No column
                 table.Columns.Add("Sr.No", GetType(Integer))
 
@@ -122,11 +123,13 @@ Public Class Form2
         End Using
     End Sub
 
+
     Private selectedPtTypeId As Integer
     Private Sub DataGridView1_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellClick
         If e.RowIndex >= 0 Then
             Dim selectedRow As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
 
+            ' Set ComboBoxPtType based on the PtTypeId in the selected row
             Dim ptTypeId As Object = selectedRow.Cells("PtTypeId").Value
             If ptTypeId IsNot Nothing AndAlso IsNumeric(ptTypeId) Then
                 ComboBoxPtType.SelectedValue = Convert.ToInt32(ptTypeId)
@@ -138,20 +141,25 @@ Public Class Form2
             ' Update the selectedPtTypeId for future operations
             selectedPtTypeId = CInt(selectedRow.Cells("Id").Value)
 
-            ' Get the OpIpType value as a boolean (0 or 1)
+            ' Get the OpIpType value and set the RadioButtons accordingly
             Dim opIpTypeValue As Object = selectedRow.Cells("OpIpType").Value
-            If opIpTypeValue IsNot Nothing AndAlso IsNumeric(opIpTypeValue) Then
-                Dim opIpType As Boolean = Convert.ToBoolean(opIpTypeValue)
-                RadioButtonOPD.Checked = opIpType
-                RadioButtonIPD.Checked = Not opIpType
+            If opIpTypeValue IsNot Nothing Then
+                If opIpTypeValue.ToString() = "OPD" Then
+                    RadioButtonOPD.Checked = True
+                    RadioButtonIPD.Checked = False
+                ElseIf opIpTypeValue.ToString() = "IPD" Then
+                    RadioButtonOPD.Checked = False
+                    RadioButtonIPD.Checked = True
+                End If
             End If
 
-            ' Fill in the discount and active/deactive status from the selected row
+            ' Fill in the discount from the selected row
             Dim discountValue As Object = selectedRow.Cells("Discount").Value
             If discountValue IsNot Nothing Then
                 txtDiscount.Text = Convert.ToString(discountValue)
             End If
 
+            ' Set the active/deactive status from the selected row
             Dim isActiveValue As Object = selectedRow.Cells("IsActive").Value
             If isActiveValue IsNot Nothing Then
                 CheckBoxActive.Checked = Convert.ToBoolean(isActiveValue)
@@ -159,6 +167,7 @@ Public Class Form2
             End If
         End If
     End Sub
+
 
     Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
         If selectedPtTypeId = 0 Then
@@ -233,4 +242,7 @@ Public Class Form2
         selectedPtTypeId = 0
     End Sub
 
+    Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click
+        Me.Close()
+    End Sub
 End Class
