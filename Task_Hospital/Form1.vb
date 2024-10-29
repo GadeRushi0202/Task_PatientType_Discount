@@ -42,7 +42,6 @@ Public Class Form1
 
     Private Sub LoadDataGridView()
         Using con As New SqlConnection(connectionString)
-            ' Selecting all records (including both active and inactive)
             Dim query As String = "SELECT * FROM mst_PtType where isActive = 1"
             Dim cmd As New SqlCommand(query, con)
             Dim adapter As New SqlDataAdapter(cmd)
@@ -115,14 +114,8 @@ Public Class Form1
     Private Sub DataGridView1_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellClick
         If e.RowIndex >= 0 Then
             Dim selectedRow As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
-
-            ' Display the PtType in txtPtType
             txtPtType.Text = selectedRow.Cells("PtType").Value.ToString()
-
-            ' Update selectedPtTypeId for further operations
             selectedPtTypeId = CInt(selectedRow.Cells("PtTypeId").Value)
-
-            ' Update checkboxes based on the active status
             Dim isActive As Boolean = CBool(selectedRow.Cells("IsActive").Value)
             CheckBoxActive.Checked = isActive
             CheckBoxDeactive.Checked = Not isActive

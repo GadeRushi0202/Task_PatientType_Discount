@@ -95,27 +95,19 @@ Public Class Form2
             Try
                 con.Open()
                 adapter.Fill(table)
-
-                ' Add a Sr.No column
                 table.Columns.Add("Sr.No", GetType(Integer))
 
                 For i As Integer = 0 To table.Rows.Count - 1
                     table.Rows(i)("Sr.No") = i + 1
                 Next
-
-                ' Bind the DataTable to the DataGridView
                 DataGridView1.DataSource = table
 
-                ' Set the display index of Sr.No column to be the first column
                 DataGridView1.Columns("Sr.No").DisplayIndex = 0
 
-                ' Hide the Id column
                 DataGridView1.Columns("Id").Visible = False
 
-                ' Hide the PtTypeId column
                 DataGridView1.Columns("PtTypeId").Visible = False
 
-                ' Set AutoSize mode for the DataGridView columns
                 DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
@@ -129,7 +121,6 @@ Public Class Form2
         If e.RowIndex >= 0 Then
             Dim selectedRow As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
 
-            ' Set ComboBoxPtType based on the PtTypeId in the selected row
             Dim ptTypeId As Object = selectedRow.Cells("PtTypeId").Value
             If ptTypeId IsNot Nothing AndAlso IsNumeric(ptTypeId) Then
                 ComboBoxPtType.SelectedValue = Convert.ToInt32(ptTypeId)
@@ -138,10 +129,8 @@ Public Class Form2
                 Return
             End If
 
-            ' Update the selectedPtTypeId for future operations
             selectedPtTypeId = CInt(selectedRow.Cells("Id").Value)
 
-            ' Get the OpIpType value and set the RadioButtons accordingly
             Dim opIpTypeValue As Object = selectedRow.Cells("OpIpType").Value
             If opIpTypeValue IsNot Nothing Then
                 If opIpTypeValue.ToString() = "OPD" Then
@@ -152,14 +141,11 @@ Public Class Form2
                     RadioButtonIPD.Checked = True
                 End If
             End If
-
-            ' Fill in the discount from the selected row
             Dim discountValue As Object = selectedRow.Cells("Discount").Value
             If discountValue IsNot Nothing Then
                 txtDiscount.Text = Convert.ToString(discountValue)
             End If
 
-            ' Set the active/deactive status from the selected row
             Dim isActiveValue As Object = selectedRow.Cells("IsActive").Value
             If isActiveValue IsNot Nothing Then
                 CheckBoxActive.Checked = Convert.ToBoolean(isActiveValue)
@@ -193,8 +179,6 @@ Public Class Form2
                 MessageBox.Show("Please enter a valid discount value.")
                 Return
             End If
-
-            ' Add parameters
             cmd.Parameters.AddWithValue("@PtTypeId", ptTypeId)
             cmd.Parameters.AddWithValue("@OpIpType", opIpType)
             cmd.Parameters.AddWithValue("@Discount", discountValue)
