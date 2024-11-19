@@ -1,11 +1,13 @@
 ﻿Imports System.Data.SqlClient
 
-Public Class Form2
+Public Class FrmPtTypewiseDisc
     Dim connectionString As String = "Data Source=DESKTOP-NUDMVOB\SQLEXPRESS; Initial Catalog=VbDotNet; Integrated Security=True"
 
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LoadPtTypeComboBox()
         LoadDataGridView()
+        ' Set Active checkbox checked by default
+        CheckBoxActive.Checked = True
     End Sub
 
     Private Sub LoadPtTypeComboBox()
@@ -40,19 +42,30 @@ Public Class Form2
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
+        ' Check if a PtType is selected
         If ComboBoxPtType.SelectedIndex = -1 Then
             MessageBox.Show("Please select a PtType.")
             Return
         End If
 
-        Dim selectedPtTypeId As Integer = CInt(ComboBoxPtType.SelectedValue)
-
+        ' Check if a valid discount value is entered
         Dim discountValue As Integer
         If Not Integer.TryParse(txtDiscount.Text, discountValue) Then
             MessageBox.Show("Please enter a valid discount value.")
             Return
         End If
+
+        ' Check if either OPD or IPD is selected
+        If Not RadioButtonOPD.Checked AndAlso Not RadioButtonIPD.Checked Then
+            MessageBox.Show("Please select either OPD or IPD.")
+            Return
+        End If
+
+        ' Get selected values
+        Dim selectedPtTypeId As Integer = CInt(ComboBoxPtType.SelectedValue)
         Dim isActive As Boolean = CheckBoxActive.Checked
+        Dim opIpType As Boolean = RadioButtonOPD.Checked ' OPD is true, IPD is false
+
         Using con As New SqlConnection(connectionString)
             Dim query As String = "INSERT INTO mst_PtTypeWiseDiscount (OpIpType, PtTypeId, Discount, IsActive) VALUES (@OpIpType, @PtTypeId, @Discount, @IsActive)"
             Dim cmd As New SqlCommand(query, con)
@@ -61,6 +74,7 @@ Public Class Form2
             cmd.Parameters.AddWithValue("@PtTypeId", selectedPtTypeId)
             cmd.Parameters.AddWithValue("@Discount", discountValue)
             cmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
+
             Try
                 con.Open()
                 Dim result As Integer = cmd.ExecuteNonQuery()
@@ -77,6 +91,7 @@ Public Class Form2
         End Using
     End Sub
 
+
     Private Sub LoadDataGridView()
         Using con As New SqlConnection(connectionString)
             Dim query As String = "SELECT d.Id, " &
@@ -86,8 +101,7 @@ Public Class Form2
                               "d.Discount, " &
                               "d.IsActive " &
                               "FROM mst_PtTypeWiseDiscount d " &
-                              "JOIN mst_PtType p ON d.PtTypeId = p.PtTypeId " &
-                              "WHERE d.IsActive = 1"
+                              "JOIN mst_PtType p ON d.PtTypeId = p.PtTypeId"
             Dim cmd As New SqlCommand(query, con)
             Dim adapter As New SqlDataAdapter(cmd)
             Dim table As New DataTable()
@@ -95,19 +109,23 @@ Public Class Form2
             Try
                 con.Open()
                 adapter.Fill(table)
-                table.Columns.Add("Sr.No", GetType(Integer))
 
+                ' Add "Sr.No" column
+                table.Columns.Add("Sr.No", GetType(Integer))
                 For i As Integer = 0 To table.Rows.Count - 1
                     table.Rows(i)("Sr.No") = i + 1
                 Next
+
+                ' Bind table to DataGridView
                 DataGridView1.DataSource = table
 
+                ' Set display order and visibility of columns
                 DataGridView1.Columns("Sr.No").DisplayIndex = 0
-
                 DataGridView1.Columns("Id").Visible = False
-
                 DataGridView1.Columns("PtTypeId").Visible = False
+                DataGridView1.Columns("Sr.No").ReadOnly = True
 
+                ' Adjust column widths
                 DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
@@ -228,5 +246,54 @@ Public Class Form2
 
     Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click
         Me.Close()
+    End Sub
+
+    Private Sub btnSearchPtType_Click(sender As Object, e As EventArgs) Handles btnSearchPtType.Click
+        Dim searchText As String = txtSearchPtType.Text.Trim()
+
+        If String.IsNullOrWhiteSpace(searchText) Then
+            MessageBox.Show("Please enter a search term.")
+            Return
+        End If
+
+        Using con As New SqlConnection(connectionString)
+            Dim query As String = "SELECT d.Id, " &
+                                  "IIF(d.OpIpType = 1, 'OPD', 'IPD') AS OpIpType, " &
+                                  "p.PtType AS PatientType, " &
+                                  "p.PtTypeId, " &
+                                  "d.Discount, " &
+                                  "d.IsActive " &
+                                  "FROM mst_PtTypeWiseDiscount d " &
+                                  "JOIN mst_PtType p ON d.PtTypeId = p.PtTypeId " &
+                                  "WHERE p.PtType LIKE @SearchText AND d.IsActive = 1"
+
+            Dim cmd As New SqlCommand(query, con)
+            cmd.Parameters.AddWithValue("@searchText", "%" & searchText & "%")
+            Dim adapter As New SqlDataAdapter(cmd)
+            Dim table As New DataTable()
+
+            Try
+                con.Open()
+                adapter.Fill(table)
+
+                If table.Rows.Count > 0 Then
+                    table.Columns.Add("Sr.No", GetType(Integer))
+                    For i As Integer = 0 To table.Rows.Count - 1
+                        table.Rows(i)("Sr.No") = i + 1
+                    Next
+                    DataGridView1.DataSource = table
+
+                    DataGridView1.Columns("Sr.No").DisplayIndex = 0
+                    DataGridView1.Columns("Id").Visible = False
+                    DataGridView1.Columns("PtTypeId").Visible = False
+                    DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                Else
+                    MessageBox.Show("No matching records found.")
+                    DataGridView1.DataSource = Nothing
+                End If
+            Catch ex As Exception
+                MessageBox.Show("An error occurred: " & ex.Message)
+            End Try
+        End Using
     End Sub
 End Class

@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class Form2
+Partial Class FrmPtTypewiseDisc
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -22,7 +22,7 @@ Partial Class Form2
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(Form2))
+        Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(FrmPtTypewiseDisc))
         Panel1 = New Panel()
         CheckBoxDeactive = New CheckBox()
         CheckBoxActive = New CheckBox()
@@ -40,6 +40,9 @@ Partial Class Form2
         Panel2 = New Panel()
         DataGridView1 = New DataGridView()
         Label1 = New Label()
+        Label5 = New Label()
+        txtSearchPtType = New TextBox()
+        btnSearchPtType = New Button()
         Panel1.SuspendLayout()
         Panel2.SuspendLayout()
         CType(DataGridView1, ComponentModel.ISupportInitialize).BeginInit()
@@ -92,7 +95,7 @@ Partial Class Form2
         ' 
         ' txtDiscount
         ' 
-        txtDiscount.Font = New Font("Times New Roman", 9.0F, FontStyle.Bold, GraphicsUnit.Point)
+        txtDiscount.Font = New Font("Times New Roman", 9F, FontStyle.Bold, GraphicsUnit.Point)
         txtDiscount.Location = New Point(14, 254)
         txtDiscount.Name = "txtDiscount"
         txtDiscount.Size = New Size(283, 25)
@@ -196,7 +199,7 @@ Partial Class Form2
         ' RadioButtonIPD
         ' 
         RadioButtonIPD.AutoSize = True
-        RadioButtonIPD.Font = New Font("Times New Roman", 10.0F, FontStyle.Bold, GraphicsUnit.Point)
+        RadioButtonIPD.Font = New Font("Times New Roman", 10F, FontStyle.Bold, GraphicsUnit.Point)
         RadioButtonIPD.ForeColor = Color.Navy
         RadioButtonIPD.Location = New Point(216, 54)
         RadioButtonIPD.Name = "RadioButtonIPD"
@@ -209,7 +212,7 @@ Partial Class Form2
         ' RadioButtonOPD
         ' 
         RadioButtonOPD.AutoSize = True
-        RadioButtonOPD.Font = New Font("Times New Roman", 10.0F, FontStyle.Bold, GraphicsUnit.Point)
+        RadioButtonOPD.Font = New Font("Times New Roman", 10F, FontStyle.Bold, GraphicsUnit.Point)
         RadioButtonOPD.ForeColor = Color.Navy
         RadioButtonOPD.Location = New Point(49, 54)
         RadioButtonOPD.Name = "RadioButtonOPD"
@@ -233,6 +236,9 @@ Partial Class Form2
         ' Panel2
         ' 
         Panel2.BackColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
+        Panel2.Controls.Add(btnSearchPtType)
+        Panel2.Controls.Add(txtSearchPtType)
+        Panel2.Controls.Add(Label5)
         Panel2.Controls.Add(DataGridView1)
         Panel2.Location = New Point(359, 72)
         Panel2.Name = "Panel2"
@@ -261,9 +267,39 @@ Partial Class Form2
         Label1.TabIndex = 2
         Label1.Text = "Patient Type Wise Discount"
         ' 
+        ' Label5
+        ' 
+        Label5.AutoSize = True
+        Label5.Font = New Font("Times New Roman", 10.8F, FontStyle.Bold, GraphicsUnit.Point)
+        Label5.ForeColor = Color.DarkMagenta
+        Label5.Location = New Point(17, 37)
+        Label5.Name = "Label5"
+        Label5.Size = New Size(106, 20)
+        Label5.TabIndex = 5
+        Label5.Text = "Patient Type"
+        ' 
+        ' txtSearchPtType
+        ' 
+        txtSearchPtType.Location = New Point(170, 37)
+        txtSearchPtType.Name = "txtSearchPtType"
+        txtSearchPtType.Size = New Size(555, 27)
+        txtSearchPtType.TabIndex = 6
+        ' 
+        ' btnSearchPtType
+        ' 
+        btnSearchPtType.BackColor = Color.DarkOrange
+        btnSearchPtType.Font = New Font("Times New Roman", 10.8F, FontStyle.Bold, GraphicsUnit.Point)
+        btnSearchPtType.ForeColor = SystemColors.ButtonHighlight
+        btnSearchPtType.Location = New Point(580, 88)
+        btnSearchPtType.Name = "btnSearchPtType"
+        btnSearchPtType.Size = New Size(145, 46)
+        btnSearchPtType.TabIndex = 7
+        btnSearchPtType.Text = "Search"
+        btnSearchPtType.UseVisualStyleBackColor = False
+        ' 
         ' Form2
         ' 
-        AutoScaleDimensions = New SizeF(8.0F, 20.0F)
+        AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.FromArgb(CByte(0), CByte(102), CByte(102))
         ClientSize = New Size(1115, 743)
@@ -275,6 +311,7 @@ Partial Class Form2
         Panel1.ResumeLayout(False)
         Panel1.PerformLayout()
         Panel2.ResumeLayout(False)
+        Panel2.PerformLayout()
         CType(DataGridView1, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
@@ -297,4 +334,7 @@ Partial Class Form2
     Friend WithEvents txtDiscount As TextBox
     Friend WithEvents CheckBoxActive As CheckBox
     Friend WithEvents CheckBoxDeactive As CheckBox
+    Friend WithEvents Label5 As Label
+    Friend WithEvents txtSearchPtType As TextBox
+    Friend WithEvents btnSearchPtType As Button
 End Class

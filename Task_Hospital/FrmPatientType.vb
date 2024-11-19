@@ -1,11 +1,14 @@
 ﻿Imports System.Data.SqlClient
 
-Public Class Form1
+Public Class FrmPatientType
 
     Dim connectionString As String = "Data Source=DESKTOP-NUDMVOB\SQLEXPRESS; Initial Catalog=VbDotNet; Integrated Security=True"
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LoadDataGridView()
+
+        ' Set Active checkbox checked by default
+        CheckBoxActive.Checked = True
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
@@ -14,35 +17,60 @@ Public Class Form1
             Return
         End If
 
+        Dim ptTypeName As String = txtPtType.Text.Trim()
         Dim isActive As Boolean = CheckBoxActive.Checked
 
         Using con As New SqlConnection(connectionString)
-            Dim cmd As New SqlCommand("INSERT INTO mst_PtType (PtType, IsActive) VALUES (@PtType, @IsActive)", con)
-            cmd.Parameters.AddWithValue("@PtType", txtPtType.Text)
-            cmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
             Try
                 con.Open()
-                Dim result As Integer = cmd.ExecuteNonQuery()
 
-                If result >= 1 Then
-                    MessageBox.Show("Data inserted successfully.")
-                    LoadDataGridView()
-                Else
-                    MessageBox.Show("Data insertion failed.")
-                End If
+                ' Check if the PtType exists and its IsActive status
+                Dim checkQuery As String = "SELECT IsActive FROM mst_PtType WHERE PtType = @PtType"
+                Using checkCmd As New SqlCommand(checkQuery, con)
+                    checkCmd.Parameters.AddWithValue("@PtType", ptTypeName)
+
+                    Dim existingStatus As Object = checkCmd.ExecuteScalar()
+
+                    If existingStatus IsNot Nothing Then
+                        If Not CBool(existingStatus) Then
+                            ' PtType is deactive, show a message but allow adding a new record
+                            MessageBox.Show("If the PtType name already exists but is currently deactivated, it can be added again.")
+                        Else
+                            ' PtType is active, block addition
+                            MessageBox.Show("Pt Type is already added.")
+                            Return
+                        End If
+                    End If
+                End Using
+
+                ' Insert a new PtType record
+                Dim insertQuery As String = "INSERT INTO mst_PtType (PtType, IsActive) VALUES (@PtType, @IsActive)"
+                Using insertCmd As New SqlCommand(insertQuery, con)
+                    insertCmd.Parameters.AddWithValue("@PtType", ptTypeName)
+                    insertCmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
+
+                    Dim result As Integer = insertCmd.ExecuteNonQuery()
+                    If result >= 1 Then
+                        MessageBox.Show("Data inserted successfully.")
+                        LoadDataGridView()
+                    Else
+                        MessageBox.Show("Data insertion failed.")
+                    End If
+                End Using
 
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
             Finally
                 con.Close()
             End Try
+
             ClearFields()
         End Using
     End Sub
 
     Private Sub LoadDataGridView()
         Using con As New SqlConnection(connectionString)
-            Dim query As String = "SELECT * FROM mst_PtType where isActive = 1"
+            Dim query As String = "SELECT * FROM mst_PtType"
             Dim cmd As New SqlCommand(query, con)
             Dim adapter As New SqlDataAdapter(cmd)
             Dim table As New DataTable()
@@ -60,6 +88,7 @@ Public Class Form1
                 DataGridView1.DataSource = table
                 DataGridView1.Columns("Sr.No").DisplayIndex = 0
                 DataGridView1.Columns("PtTypeId").Visible = False ' Hide the PtTypeId column
+                DataGridView1.Columns("Sr.No").ReadOnly = True ' Make Sr.No column read-only
                 DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
             Catch ex As Exception
@@ -74,7 +103,9 @@ Public Class Form1
 
     Private Sub ClearFields()
         txtPtType.Clear()
-        CheckBoxActive.Checked = False
+
+        ' Set Active checkbox checked by default
+        CheckBoxActive.Checked = True
         CheckBoxDeactive.Checked = False
     End Sub
 
@@ -138,4 +169,48 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub btnSearchPtType_Click(sender As Object, e As EventArgs) Handles btnSearchPtType.Click
+        Dim searchText As String = txtSearchPtType.Text.Trim()
+
+        If String.IsNullOrWhiteSpace(searchText) Then
+            MessageBox.Show("Please enter a search term.")
+            Return
+        End If
+
+        Using con As New SqlConnection(connectionString)
+            Dim query As String = "SELECT * FROM mst_PtType WHERE PtType LIKE @searchText"
+            Dim cmd As New SqlCommand(query, con)
+            cmd.Parameters.AddWithValue("@searchText", "%" & searchText & "%")
+            Dim adapter As New SqlDataAdapter(cmd)
+            Dim table As New DataTable()
+
+            Try
+                con.Open()
+                adapter.Fill(table)
+
+                If table.Rows.Count > 0 Then
+                    ' Add a serial number column
+                    table.Columns.Add("Sr.No", GetType(Integer))
+                    For i As Integer = 0 To table.Rows.Count - 1
+                        table.Rows(i)("Sr.No") = i + 1
+                    Next
+
+                    DataGridView1.DataSource = table
+                    DataGridView1.Columns("Sr.No").DisplayIndex = 0
+                    DataGridView1.Columns("PtTypeId").Visible = False ' Hide the PtTypeId column
+                    DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                Else
+                    MessageBox.Show("No records found.")
+                    DataGridView1.DataSource = Nothing
+                End If
+
+            Catch ex As Exception
+                MessageBox.Show("An error occurred: " & ex.Message)
+            End Try
+        End Using
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        FrmPtTypewiseDisc.Show()
+    End Sub
 End Class
