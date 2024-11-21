@@ -1,10 +1,9 @@
 ﻿Imports System.Data.SqlClient
 
 Public Class FrmPatientType
+    Private selectedPtTypeId As Integer
 
-    Dim connectionString As String = "Data Source=DESKTOP-NUDMVOB\SQLEXPRESS; Initial Catalog=VbDotNet; Integrated Security=True"
-
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub FrmPatientType_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LoadDataGridView()
 
         ' Set Active checkbox checked by default
@@ -20,7 +19,7 @@ Public Class FrmPatientType
         Dim ptTypeName As String = txtPtType.Text.Trim()
         Dim isActive As Boolean = CheckBoxActive.Checked
 
-        Using con As New SqlConnection(connectionString)
+        Using con As SqlConnection = DatabaseHelper.GetConnection()
             Try
                 con.Open()
 
@@ -33,10 +32,8 @@ Public Class FrmPatientType
 
                     If existingStatus IsNot Nothing Then
                         If Not CBool(existingStatus) Then
-                            ' PtType is deactive, show a message but allow adding a new record
                             MessageBox.Show("If the PtType name already exists but is currently deactivated, it can be added again.")
                         Else
-                            ' PtType is active, block addition
                             MessageBox.Show("Pt Type is already added.")
                             Return
                         End If
@@ -60,8 +57,6 @@ Public Class FrmPatientType
 
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
-            Finally
-                con.Close()
             End Try
 
             ClearFields()
@@ -69,7 +64,7 @@ Public Class FrmPatientType
     End Sub
 
     Private Sub LoadDataGridView()
-        Using con As New SqlConnection(connectionString)
+        Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim query As String = "SELECT * FROM mst_PtType"
             Dim cmd As New SqlCommand(query, con)
             Dim adapter As New SqlDataAdapter(cmd)
@@ -109,8 +104,6 @@ Public Class FrmPatientType
         CheckBoxDeactive.Checked = False
     End Sub
 
-    Private selectedPtTypeId As Integer
-
     Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
         If selectedPtTypeId = 0 Then
             MessageBox.Show("Please select a record to update.")
@@ -118,7 +111,7 @@ Public Class FrmPatientType
         End If
 
         Dim isActive As Boolean = CheckBoxActive.Checked
-        Using con As New SqlConnection(connectionString)
+        Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim cmd As New SqlCommand("UPDATE mst_PtType SET PtType = @PtType, IsActive = @IsActive WHERE PtTypeId = @PtTypeId", con)
             cmd.Parameters.AddWithValue("@PtType", txtPtType.Text)
             cmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
@@ -136,8 +129,6 @@ Public Class FrmPatientType
                 End If
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
-            Finally
-                con.Close()
             End Try
         End Using
     End Sub
@@ -177,7 +168,7 @@ Public Class FrmPatientType
             Return
         End If
 
-        Using con As New SqlConnection(connectionString)
+        Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim query As String = "SELECT * FROM mst_PtType WHERE PtType LIKE @searchText"
             Dim cmd As New SqlCommand(query, con)
             cmd.Parameters.AddWithValue("@searchText", "%" & searchText & "%")
@@ -189,7 +180,6 @@ Public Class FrmPatientType
                 adapter.Fill(table)
 
                 If table.Rows.Count > 0 Then
-                    ' Add a serial number column
                     table.Columns.Add("Sr.No", GetType(Integer))
                     For i As Integer = 0 To table.Rows.Count - 1
                         table.Rows(i)("Sr.No") = i + 1
@@ -197,7 +187,7 @@ Public Class FrmPatientType
 
                     DataGridView1.DataSource = table
                     DataGridView1.Columns("Sr.No").DisplayIndex = 0
-                    DataGridView1.Columns("PtTypeId").Visible = False ' Hide the PtTypeId column
+                    DataGridView1.Columns("PtTypeId").Visible = False
                     DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
                 Else
                     MessageBox.Show("No records found.")
