@@ -10,59 +10,7 @@ Public Class FrmPatientType
         CheckBoxActive.Checked = True
     End Sub
 
-    'Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
-    '    If String.IsNullOrWhiteSpace(txtPtType.Text) Then
-    '        MessageBox.Show("Please fill in the PtType.")
-    '        Return
-    '    End If
 
-    '    Dim ptTypeName As String = txtPtType.Text.Trim()
-    '    Dim isActive As Boolean = CheckBoxActive.Checked
-
-    '    Using con As SqlConnection = DatabaseHelper.GetConnection()
-    '        Try
-    '            con.Open()
-
-    '            ' Check if the PtType exists and its IsActive status
-    '            Dim checkQuery As String = "SELECT IsActive FROM mst_PtType WHERE PtType = @PtType"
-    '            Using checkCmd As New SqlCommand(checkQuery, con)
-    '                checkCmd.Parameters.AddWithValue("@PtType", ptTypeName)
-
-    '                Dim existingStatus As Object = checkCmd.ExecuteScalar()
-
-
-    '                If existingStatus IsNot Nothing Then
-    '                    If CBool(existingStatus) Then
-    '                        MessageBox.Show("Pt Type is already added.")
-    '                        Return
-    '                    Else
-    '                        MessageBox.Show("Pt Type is currently deactive and will be added again.")
-    '                    End If
-    '                End If
-    '            End Using
-
-    '            ' Insert a new PtType record
-    '            Dim insertQuery As String = "INSERT INTO mst_PtType (PtType, IsActive) VALUES (@PtType, @IsActive)"
-    '            Using insertCmd As New SqlCommand(insertQuery, con)
-    '                insertCmd.Parameters.AddWithValue("@PtType", ptTypeName)
-    '                insertCmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
-
-    '                Dim result As Integer = insertCmd.ExecuteNonQuery()
-    '                If result >= 1 Then
-    '                    MessageBox.Show("Data inserted successfully.")
-    '                    LoadDataGridView()
-    '                Else
-    '                    MessageBox.Show("Data insertion failed.")
-    '                End If
-    '            End Using
-
-    '        Catch ex As Exception
-    '            MessageBox.Show("An error occurred: " & ex.Message)
-    '        End Try
-
-    '        ClearFields()
-    '    End Using
-    'End Sub
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
         If String.IsNullOrWhiteSpace(txtPtType.Text) Then
             MessageBox.Show("Please fill in the PtType.")
