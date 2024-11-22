@@ -24,9 +24,9 @@ Partial Class FrmPatientType
     Private Sub InitializeComponent()
         Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(FrmPatientType))
         Panel1 = New Panel()
-        Button1 = New Button()
-        CheckBoxDeactive = New CheckBox()
-        CheckBoxActive = New CheckBox()
+        btnPtTypeWiseDisc = New Button()
+        chkIsDeactive = New CheckBox()
+        chkIsActive = New CheckBox()
         btnClose = New Button()
         btnSave = New Button()
         btnUpdate = New Button()
@@ -37,20 +37,20 @@ Partial Class FrmPatientType
         btnSearchPtType = New Button()
         txtSearchPtType = New TextBox()
         Label3 = New Label()
-        DataGridView1 = New DataGridView()
+        dgvPtType = New DataGridView()
         Label1 = New Label()
         Panel1.SuspendLayout()
         Panel2.SuspendLayout()
-        CType(DataGridView1, ComponentModel.ISupportInitialize).BeginInit()
+        CType(dgvPtType, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' Panel1
         ' 
         Panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink
         Panel1.BackColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
-        Panel1.Controls.Add(Button1)
-        Panel1.Controls.Add(CheckBoxDeactive)
-        Panel1.Controls.Add(CheckBoxActive)
+        Panel1.Controls.Add(btnPtTypeWiseDisc)
+        Panel1.Controls.Add(chkIsDeactive)
+        Panel1.Controls.Add(chkIsActive)
         Panel1.Controls.Add(btnClose)
         Panel1.Controls.Add(btnSave)
         Panel1.Controls.Add(btnUpdate)
@@ -62,40 +62,40 @@ Partial Class FrmPatientType
         Panel1.Size = New Size(338, 676)
         Panel1.TabIndex = 0
         ' 
-        ' Button1
+        ' btnPtTypeWiseDisc
         ' 
-        Button1.Location = New Point(7, 463)
-        Button1.Name = "Button1"
-        Button1.Size = New Size(94, 29)
-        Button1.TabIndex = 11
-        Button1.Text = "From2"
-        Button1.UseVisualStyleBackColor = True
+        btnPtTypeWiseDisc.Location = New Point(7, 463)
+        btnPtTypeWiseDisc.Name = "btnPtTypeWiseDisc"
+        btnPtTypeWiseDisc.Size = New Size(230, 29)
+        btnPtTypeWiseDisc.TabIndex = 11
+        btnPtTypeWiseDisc.Text = "Pt Type Wise Discount"
+        btnPtTypeWiseDisc.UseVisualStyleBackColor = True
         ' 
-        ' CheckBoxDeactive
+        ' chkIsDeactive
         ' 
-        CheckBoxDeactive.AutoSize = True
-        CheckBoxDeactive.BackColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
-        CheckBoxDeactive.Font = New Font("Times New Roman", 10.2F, FontStyle.Bold, GraphicsUnit.Point)
-        CheckBoxDeactive.ForeColor = Color.DarkMagenta
-        CheckBoxDeactive.Location = New Point(135, 103)
-        CheckBoxDeactive.Name = "CheckBoxDeactive"
-        CheckBoxDeactive.Size = New Size(95, 23)
-        CheckBoxDeactive.TabIndex = 10
-        CheckBoxDeactive.Text = "Deactive"
-        CheckBoxDeactive.UseVisualStyleBackColor = False
+        chkIsDeactive.AutoSize = True
+        chkIsDeactive.BackColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
+        chkIsDeactive.Font = New Font("Times New Roman", 10.2F, FontStyle.Bold, GraphicsUnit.Point)
+        chkIsDeactive.ForeColor = Color.DarkMagenta
+        chkIsDeactive.Location = New Point(135, 103)
+        chkIsDeactive.Name = "chkIsDeactive"
+        chkIsDeactive.Size = New Size(95, 23)
+        chkIsDeactive.TabIndex = 10
+        chkIsDeactive.Text = "Deactive"
+        chkIsDeactive.UseVisualStyleBackColor = False
         ' 
-        ' CheckBoxActive
+        ' chkIsActive
         ' 
-        CheckBoxActive.AutoSize = True
-        CheckBoxActive.BackColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
-        CheckBoxActive.Font = New Font("Times New Roman", 10.2F, FontStyle.Bold, GraphicsUnit.Point)
-        CheckBoxActive.ForeColor = Color.DarkMagenta
-        CheckBoxActive.Location = New Point(15, 103)
-        CheckBoxActive.Name = "CheckBoxActive"
-        CheckBoxActive.Size = New Size(78, 23)
-        CheckBoxActive.TabIndex = 9
-        CheckBoxActive.Text = "Active"
-        CheckBoxActive.UseVisualStyleBackColor = False
+        chkIsActive.AutoSize = True
+        chkIsActive.BackColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
+        chkIsActive.Font = New Font("Times New Roman", 10.2F, FontStyle.Bold, GraphicsUnit.Point)
+        chkIsActive.ForeColor = Color.DarkMagenta
+        chkIsActive.Location = New Point(15, 103)
+        chkIsActive.Name = "chkIsActive"
+        chkIsActive.Size = New Size(78, 23)
+        chkIsActive.TabIndex = 9
+        chkIsActive.Text = "Active"
+        chkIsActive.UseVisualStyleBackColor = False
         ' 
         ' btnClose
         ' 
@@ -187,7 +187,7 @@ Partial Class FrmPatientType
         Panel2.Controls.Add(btnSearchPtType)
         Panel2.Controls.Add(txtSearchPtType)
         Panel2.Controls.Add(Label3)
-        Panel2.Controls.Add(DataGridView1)
+        Panel2.Controls.Add(dgvPtType)
         Panel2.Location = New Point(349, 58)
         Panel2.Name = "Panel2"
         Panel2.Size = New Size(781, 675)
@@ -223,16 +223,16 @@ Partial Class FrmPatientType
         Label3.TabIndex = 4
         Label3.Text = "Patient Type"
         ' 
-        ' DataGridView1
+        ' dgvPtType
         ' 
-        DataGridView1.BackgroundColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
-        DataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridView1.Location = New Point(3, 122)
-        DataGridView1.Name = "DataGridView1"
-        DataGridView1.RowHeadersWidth = 51
-        DataGridView1.RowTemplate.Height = 29
-        DataGridView1.Size = New Size(759, 545)
-        DataGridView1.TabIndex = 0
+        dgvPtType.BackgroundColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
+        dgvPtType.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        dgvPtType.Location = New Point(3, 122)
+        dgvPtType.Name = "dgvPtType"
+        dgvPtType.RowHeadersWidth = 51
+        dgvPtType.RowTemplate.Height = 29
+        dgvPtType.Size = New Size(759, 545)
+        dgvPtType.TabIndex = 0
         ' 
         ' Label1
         ' 
@@ -255,12 +255,12 @@ Partial Class FrmPatientType
         Controls.Add(Panel2)
         Controls.Add(Panel1)
         Name = "FrmPatientType"
-        Text = "Form1"
+        Text = "Form Patient Type"
         Panel1.ResumeLayout(False)
         Panel1.PerformLayout()
         Panel2.ResumeLayout(False)
         Panel2.PerformLayout()
-        CType(DataGridView1, ComponentModel.ISupportInitialize).EndInit()
+        CType(dgvPtType, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -274,10 +274,10 @@ Partial Class FrmPatientType
     Friend WithEvents btnClose As Button
     Friend WithEvents btnSave As Button
     Friend WithEvents btnUpdate As Button
-    Friend WithEvents DataGridView1 As DataGridView
-    Friend WithEvents CheckBoxActive As CheckBox
-    Friend WithEvents CheckBoxDeactive As CheckBox
-    Friend WithEvents Button1 As Button
+    Friend WithEvents dgvPtType As DataGridView
+    Friend WithEvents chkIsActive As CheckBox
+    Friend WithEvents chkIsDeactive As CheckBox
+    Friend WithEvents btnPtTypeWiseDisc As Button
     Friend WithEvents Label3 As Label
     Friend WithEvents txtSearchPtType As TextBox
     Friend WithEvents btnSearchPtType As Button

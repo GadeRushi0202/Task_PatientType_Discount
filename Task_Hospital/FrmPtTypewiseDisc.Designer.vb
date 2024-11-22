@@ -24,74 +24,74 @@ Partial Class FrmPtTypewiseDisc
     Private Sub InitializeComponent()
         Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(FrmPtTypewiseDisc))
         Panel1 = New Panel()
-        CheckBoxDeactive = New CheckBox()
-        CheckBoxActive = New CheckBox()
+        chkIsDeactive = New CheckBox()
+        chkIsActive = New CheckBox()
         txtDiscount = New TextBox()
         Label4 = New Label()
         btnClose = New Button()
         btnSave = New Button()
         btnUpdate = New Button()
         btnNew = New Button()
-        ComboBoxPtType = New ComboBox()
+        cmbPtTypeWiseDiscount = New ComboBox()
         Label3 = New Label()
-        RadioButtonIPD = New RadioButton()
-        RadioButtonOPD = New RadioButton()
+        rbtnIPD = New RadioButton()
+        rbtnOPD = New RadioButton()
         Label2 = New Label()
         Panel2 = New Panel()
-        DataGridView1 = New DataGridView()
-        Label1 = New Label()
-        Label5 = New Label()
-        txtSearchPtType = New TextBox()
         btnSearchPtType = New Button()
+        txtSearchPtType = New TextBox()
+        Label5 = New Label()
+        dgvPtTypeWiseDiscount = New DataGridView()
+        Label1 = New Label()
         Panel1.SuspendLayout()
         Panel2.SuspendLayout()
-        CType(DataGridView1, ComponentModel.ISupportInitialize).BeginInit()
+        CType(dgvPtTypeWiseDiscount, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' Panel1
         ' 
         Panel1.BackColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
-        Panel1.Controls.Add(CheckBoxDeactive)
-        Panel1.Controls.Add(CheckBoxActive)
+        Panel1.Controls.Add(chkIsDeactive)
+        Panel1.Controls.Add(chkIsActive)
         Panel1.Controls.Add(txtDiscount)
         Panel1.Controls.Add(Label4)
         Panel1.Controls.Add(btnClose)
         Panel1.Controls.Add(btnSave)
         Panel1.Controls.Add(btnUpdate)
         Panel1.Controls.Add(btnNew)
-        Panel1.Controls.Add(ComboBoxPtType)
+        Panel1.Controls.Add(cmbPtTypeWiseDiscount)
         Panel1.Controls.Add(Label3)
-        Panel1.Controls.Add(RadioButtonIPD)
-        Panel1.Controls.Add(RadioButtonOPD)
+        Panel1.Controls.Add(rbtnIPD)
+        Panel1.Controls.Add(rbtnOPD)
         Panel1.Controls.Add(Label2)
         Panel1.Location = New Point(7, 72)
         Panel1.Name = "Panel1"
         Panel1.Size = New Size(338, 662)
         Panel1.TabIndex = 0
         ' 
-        ' CheckBoxDeactive
+        ' chkIsDeactive
         ' 
-        CheckBoxDeactive.AutoSize = True
-        CheckBoxDeactive.Font = New Font("Times New Roman", 10.2F, FontStyle.Bold, GraphicsUnit.Point)
-        CheckBoxDeactive.ForeColor = Color.DarkMagenta
-        CheckBoxDeactive.Location = New Point(149, 310)
-        CheckBoxDeactive.Name = "CheckBoxDeactive"
-        CheckBoxDeactive.Size = New Size(95, 23)
-        CheckBoxDeactive.TabIndex = 12
-        CheckBoxDeactive.Text = "Deactive"
-        CheckBoxDeactive.UseVisualStyleBackColor = True
+        chkIsDeactive.AutoSize = True
+        chkIsDeactive.Font = New Font("Times New Roman", 10.2F, FontStyle.Bold, GraphicsUnit.Point)
+        chkIsDeactive.ForeColor = Color.DarkMagenta
+        chkIsDeactive.Location = New Point(149, 310)
+        chkIsDeactive.Name = "chkIsDeactive"
+        chkIsDeactive.Size = New Size(95, 23)
+        chkIsDeactive.TabIndex = 12
+        chkIsDeactive.Text = "Deactive"
+        chkIsDeactive.UseVisualStyleBackColor = True
         ' 
-        ' CheckBoxActive
+        ' chkIsActive
         ' 
-        CheckBoxActive.AutoSize = True
-        CheckBoxActive.Font = New Font("Times New Roman", 10.2F, FontStyle.Bold, GraphicsUnit.Point)
-        CheckBoxActive.ForeColor = Color.DarkMagenta
-        CheckBoxActive.Location = New Point(32, 310)
-        CheckBoxActive.Name = "CheckBoxActive"
-        CheckBoxActive.Size = New Size(78, 23)
-        CheckBoxActive.TabIndex = 11
-        CheckBoxActive.Text = "Active"
-        CheckBoxActive.UseVisualStyleBackColor = True
+        chkIsActive.AutoSize = True
+        chkIsActive.Font = New Font("Times New Roman", 10.2F, FontStyle.Bold, GraphicsUnit.Point)
+        chkIsActive.ForeColor = Color.DarkMagenta
+        chkIsActive.Location = New Point(32, 310)
+        chkIsActive.Name = "chkIsActive"
+        chkIsActive.Size = New Size(78, 23)
+        chkIsActive.TabIndex = 11
+        chkIsActive.Text = "Active"
+        chkIsActive.UseVisualStyleBackColor = True
         ' 
         ' txtDiscount
         ' 
@@ -176,14 +176,14 @@ Partial Class FrmPtTypewiseDisc
         btnNew.TextAlign = ContentAlignment.MiddleRight
         btnNew.UseVisualStyleBackColor = False
         ' 
-        ' ComboBoxPtType
+        ' cmbPtTypeWiseDiscount
         ' 
-        ComboBoxPtType.BackColor = SystemColors.ScrollBar
-        ComboBoxPtType.FormattingEnabled = True
-        ComboBoxPtType.Location = New Point(14, 157)
-        ComboBoxPtType.Name = "ComboBoxPtType"
-        ComboBoxPtType.Size = New Size(283, 28)
-        ComboBoxPtType.TabIndex = 4
+        cmbPtTypeWiseDiscount.BackColor = SystemColors.ScrollBar
+        cmbPtTypeWiseDiscount.FormattingEnabled = True
+        cmbPtTypeWiseDiscount.Location = New Point(14, 157)
+        cmbPtTypeWiseDiscount.Name = "cmbPtTypeWiseDiscount"
+        cmbPtTypeWiseDiscount.Size = New Size(283, 28)
+        cmbPtTypeWiseDiscount.TabIndex = 4
         ' 
         ' Label3
         ' 
@@ -196,31 +196,31 @@ Partial Class FrmPtTypewiseDisc
         Label3.TabIndex = 3
         Label3.Text = "Patient Type"
         ' 
-        ' RadioButtonIPD
+        ' rbtnIPD
         ' 
-        RadioButtonIPD.AutoSize = True
-        RadioButtonIPD.Font = New Font("Times New Roman", 10F, FontStyle.Bold, GraphicsUnit.Point)
-        RadioButtonIPD.ForeColor = Color.Navy
-        RadioButtonIPD.Location = New Point(216, 54)
-        RadioButtonIPD.Name = "RadioButtonIPD"
-        RadioButtonIPD.Size = New Size(59, 23)
-        RadioButtonIPD.TabIndex = 2
-        RadioButtonIPD.TabStop = True
-        RadioButtonIPD.Text = "IPD"
-        RadioButtonIPD.UseVisualStyleBackColor = True
+        rbtnIPD.AutoSize = True
+        rbtnIPD.Font = New Font("Times New Roman", 10F, FontStyle.Bold, GraphicsUnit.Point)
+        rbtnIPD.ForeColor = Color.Navy
+        rbtnIPD.Location = New Point(216, 54)
+        rbtnIPD.Name = "rbtnIPD"
+        rbtnIPD.Size = New Size(59, 23)
+        rbtnIPD.TabIndex = 2
+        rbtnIPD.TabStop = True
+        rbtnIPD.Text = "IPD"
+        rbtnIPD.UseVisualStyleBackColor = True
         ' 
-        ' RadioButtonOPD
+        ' rbtnOPD
         ' 
-        RadioButtonOPD.AutoSize = True
-        RadioButtonOPD.Font = New Font("Times New Roman", 10F, FontStyle.Bold, GraphicsUnit.Point)
-        RadioButtonOPD.ForeColor = Color.Navy
-        RadioButtonOPD.Location = New Point(49, 54)
-        RadioButtonOPD.Name = "RadioButtonOPD"
-        RadioButtonOPD.Size = New Size(66, 23)
-        RadioButtonOPD.TabIndex = 1
-        RadioButtonOPD.TabStop = True
-        RadioButtonOPD.Text = "OPD"
-        RadioButtonOPD.UseVisualStyleBackColor = True
+        rbtnOPD.AutoSize = True
+        rbtnOPD.Font = New Font("Times New Roman", 10F, FontStyle.Bold, GraphicsUnit.Point)
+        rbtnOPD.ForeColor = Color.Navy
+        rbtnOPD.Location = New Point(49, 54)
+        rbtnOPD.Name = "rbtnOPD"
+        rbtnOPD.Size = New Size(66, 23)
+        rbtnOPD.TabIndex = 1
+        rbtnOPD.TabStop = True
+        rbtnOPD.Text = "OPD"
+        rbtnOPD.UseVisualStyleBackColor = True
         ' 
         ' Label2
         ' 
@@ -239,51 +239,11 @@ Partial Class FrmPtTypewiseDisc
         Panel2.Controls.Add(btnSearchPtType)
         Panel2.Controls.Add(txtSearchPtType)
         Panel2.Controls.Add(Label5)
-        Panel2.Controls.Add(DataGridView1)
+        Panel2.Controls.Add(dgvPtTypeWiseDiscount)
         Panel2.Location = New Point(359, 72)
         Panel2.Name = "Panel2"
         Panel2.Size = New Size(744, 662)
         Panel2.TabIndex = 1
-        ' 
-        ' DataGridView1
-        ' 
-        DataGridView1.BackgroundColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
-        DataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridView1.Location = New Point(17, 157)
-        DataGridView1.Name = "DataGridView1"
-        DataGridView1.RowHeadersWidth = 51
-        DataGridView1.RowTemplate.Height = 29
-        DataGridView1.Size = New Size(708, 505)
-        DataGridView1.TabIndex = 0
-        ' 
-        ' Label1
-        ' 
-        Label1.AutoSize = True
-        Label1.Font = New Font("Times New Roman", 22.2F, FontStyle.Bold, GraphicsUnit.Point)
-        Label1.ForeColor = SystemColors.ButtonHighlight
-        Label1.Location = New Point(12, 13)
-        Label1.Name = "Label1"
-        Label1.Size = New Size(448, 42)
-        Label1.TabIndex = 2
-        Label1.Text = "Patient Type Wise Discount"
-        ' 
-        ' Label5
-        ' 
-        Label5.AutoSize = True
-        Label5.Font = New Font("Times New Roman", 10.8F, FontStyle.Bold, GraphicsUnit.Point)
-        Label5.ForeColor = Color.DarkMagenta
-        Label5.Location = New Point(17, 37)
-        Label5.Name = "Label5"
-        Label5.Size = New Size(106, 20)
-        Label5.TabIndex = 5
-        Label5.Text = "Patient Type"
-        ' 
-        ' txtSearchPtType
-        ' 
-        txtSearchPtType.Location = New Point(170, 37)
-        txtSearchPtType.Name = "txtSearchPtType"
-        txtSearchPtType.Size = New Size(555, 27)
-        txtSearchPtType.TabIndex = 6
         ' 
         ' btnSearchPtType
         ' 
@@ -297,7 +257,47 @@ Partial Class FrmPtTypewiseDisc
         btnSearchPtType.Text = "Search"
         btnSearchPtType.UseVisualStyleBackColor = False
         ' 
-        ' Form2
+        ' txtSearchPtType
+        ' 
+        txtSearchPtType.Location = New Point(170, 37)
+        txtSearchPtType.Name = "txtSearchPtType"
+        txtSearchPtType.Size = New Size(555, 27)
+        txtSearchPtType.TabIndex = 6
+        ' 
+        ' Label5
+        ' 
+        Label5.AutoSize = True
+        Label5.Font = New Font("Times New Roman", 10.8F, FontStyle.Bold, GraphicsUnit.Point)
+        Label5.ForeColor = Color.DarkMagenta
+        Label5.Location = New Point(17, 37)
+        Label5.Name = "Label5"
+        Label5.Size = New Size(106, 20)
+        Label5.TabIndex = 5
+        Label5.Text = "Patient Type"
+        ' 
+        ' dgvPtTypeWiseDiscount
+        ' 
+        dgvPtTypeWiseDiscount.BackgroundColor = Color.FromArgb(CByte(186), CByte(231), CByte(254))
+        dgvPtTypeWiseDiscount.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        dgvPtTypeWiseDiscount.Location = New Point(17, 157)
+        dgvPtTypeWiseDiscount.Name = "dgvPtTypeWiseDiscount"
+        dgvPtTypeWiseDiscount.RowHeadersWidth = 51
+        dgvPtTypeWiseDiscount.RowTemplate.Height = 29
+        dgvPtTypeWiseDiscount.Size = New Size(708, 505)
+        dgvPtTypeWiseDiscount.TabIndex = 0
+        ' 
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.Font = New Font("Times New Roman", 22.2F, FontStyle.Bold, GraphicsUnit.Point)
+        Label1.ForeColor = SystemColors.ButtonHighlight
+        Label1.Location = New Point(12, 13)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(448, 42)
+        Label1.TabIndex = 2
+        Label1.Text = "Patient Type Wise Discount"
+        ' 
+        ' FrmPtTypewiseDisc
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
@@ -306,13 +306,13 @@ Partial Class FrmPtTypewiseDisc
         Controls.Add(Label1)
         Controls.Add(Panel2)
         Controls.Add(Panel1)
-        Name = "Form2"
-        Text = "Form2"
+        Name = "FrmPtTypewiseDisc"
+        Text = "Form Patient Type Wise Discount"
         Panel1.ResumeLayout(False)
         Panel1.PerformLayout()
         Panel2.ResumeLayout(False)
         Panel2.PerformLayout()
-        CType(DataGridView1, ComponentModel.ISupportInitialize).EndInit()
+        CType(dgvPtTypeWiseDiscount, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -321,19 +321,19 @@ Partial Class FrmPtTypewiseDisc
     Friend WithEvents Panel2 As Panel
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
-    Friend WithEvents RadioButtonOPD As RadioButton
-    Friend WithEvents RadioButtonIPD As RadioButton
-    Friend WithEvents ComboBoxPtType As ComboBox
+    Friend WithEvents rbtnOPD As RadioButton
+    Friend WithEvents rbtnIPD As RadioButton
+    Friend WithEvents cmbPtTypeWiseDiscount As ComboBox
     Friend WithEvents Label3 As Label
     Friend WithEvents btnNew As Button
     Friend WithEvents btnClose As Button
     Friend WithEvents btnSave As Button
     Friend WithEvents btnUpdate As Button
-    Friend WithEvents DataGridView1 As DataGridView
+    Friend WithEvents dgvPtTypeWiseDiscount As DataGridView
     Friend WithEvents Label4 As Label
     Friend WithEvents txtDiscount As TextBox
-    Friend WithEvents CheckBoxActive As CheckBox
-    Friend WithEvents CheckBoxDeactive As CheckBox
+    Friend WithEvents chkIsActive As CheckBox
+    Friend WithEvents chkIsDeactive As CheckBox
     Friend WithEvents Label5 As Label
     Friend WithEvents txtSearchPtType As TextBox
     Friend WithEvents btnSearchPtType As Button

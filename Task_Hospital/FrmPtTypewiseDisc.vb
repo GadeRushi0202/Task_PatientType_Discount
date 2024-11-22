@@ -4,15 +4,16 @@ Public Class FrmPtTypewiseDisc
     'Dim connectionString As String = "Data Source=DESKTOP-NUDMVOB\SQLEXPRESS; Initial Catalog=VbDotNet; Integrated Security=True"
 
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        LoadPtTypeComboBox()
-        LoadDataGridView()
+        LoadCmbPtTypeWiseDisc()
+        LoadDgvPtTypeWiseDisc()
         ' Set Active checkbox checked by default
-        CheckBoxActive.Checked = True
+        chkIsActive.Checked = True
+
     End Sub
 
-    Private Sub LoadPtTypeComboBox()
+    Private Sub LoadCmbPtTypeWiseDisc()
         Using con As SqlConnection = DatabaseHelper.GetConnection()
-            Dim query As String = "SELECT * FROM mst_PtType"
+            Dim query As String = "SELECT * FROM mst_PtType WHERE IsActive = 1"
             Dim cmd As New SqlCommand(query, con)
             Dim adapter As New SqlDataAdapter(cmd)
             Dim table As New DataTable()
@@ -21,10 +22,10 @@ Public Class FrmPtTypewiseDisc
                 con.Open()
                 adapter.Fill(table)
 
-                ComboBoxPtType.DataSource = table
-                ComboBoxPtType.DisplayMember = "PtType"
-                ComboBoxPtType.ValueMember = "PtTypeId"
-                ComboBoxPtType.SelectedIndex = -1
+                cmbPtTypeWiseDiscount.DataSource = table
+                cmbPtTypeWiseDiscount.DisplayMember = "PtType"
+                cmbPtTypeWiseDiscount.ValueMember = "PtTypeId"
+                cmbPtTypeWiseDiscount.SelectedIndex = -1
             Catch ex As Exception
                 MessageBox.Show("An error occurred while loading data: " & ex.Message)
             End Try
@@ -33,17 +34,17 @@ Public Class FrmPtTypewiseDisc
 
     Dim opIpType As Boolean
 
-    Private Sub RadioButtonOPD_CheckedChanged(sender As Object, e As EventArgs) Handles RadioButtonOPD.CheckedChanged
-        opIpType = RadioButtonOPD.Checked
+    Private Sub rbtnOPD_CheckedChanged(sender As Object, e As EventArgs) Handles rbtnOPD.CheckedChanged
+        opIpType = rbtnOPD.Checked
     End Sub
 
-    Private Sub RadioButtonIPD_CheckedChanged(sender As Object, e As EventArgs) Handles RadioButtonIPD.CheckedChanged
-        opIpType = Not RadioButtonIPD.Checked
+    Private Sub rbtnIPD_CheckedChanged(sender As Object, e As EventArgs) Handles rbtnIPD.CheckedChanged
+        opIpType = Not rbtnIPD.Checked
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
         ' Check if a PtType is selected
-        If ComboBoxPtType.SelectedIndex = -1 Then
+        If cmbPtTypeWiseDiscount.SelectedIndex = -1 Then
             MessageBox.Show("Please select a PtType.")
             Return
         End If
@@ -56,15 +57,19 @@ Public Class FrmPtTypewiseDisc
         End If
 
         ' Check if either OPD or IPD is selected
-        If Not RadioButtonOPD.Checked AndAlso Not RadioButtonIPD.Checked Then
+        If Not rbtnOPD.Checked AndAlso Not rbtnIPD.Checked Then
             MessageBox.Show("Please select either OPD or IPD.")
             Return
         End If
-
+        ' Validate Active/Deactive selection
+        If Not (chkIsActive.Checked Or chkIsDeactive.Checked) Then
+            MessageBox.Show("Please select at least one status: Active or Deactive.")
+            Return
+        End If
         ' Get selected values
-        Dim selectedPtTypeId As Integer = CInt(ComboBoxPtType.SelectedValue)
-        Dim isActive As Boolean = CheckBoxActive.Checked
-        Dim opIpType As Boolean = RadioButtonOPD.Checked ' OPD is true, IPD is false
+        Dim selectedPtTypeId As Integer = CInt(cmbPtTypeWiseDiscount.SelectedValue)
+        Dim isActive As Boolean = chkIsActive.Checked
+        Dim opIpType As Boolean = rbtnOPD.Checked ' OPD is true, IPD is false
 
         Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim query As String = "INSERT INTO mst_PtTypeWiseDiscount (OpIpType, PtTypeId, Discount, IsActive) VALUES (@OpIpType, @PtTypeId, @Discount, @IsActive)"
@@ -81,7 +86,7 @@ Public Class FrmPtTypewiseDisc
 
                 If result > 0 Then
                     MessageBox.Show("Data inserted successfully.")
-                    LoadDataGridView()
+                    LoadDgvPtTypeWiseDisc()
                 Else
                     MessageBox.Show("Data insertion failed.")
                 End If
@@ -92,7 +97,7 @@ Public Class FrmPtTypewiseDisc
     End Sub
 
 
-    Private Sub LoadDataGridView()
+    Private Sub LoadDgvPtTypeWiseDisc()
         Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim query As String = "SELECT d.Id, " &
                               "IIF(d.OpIpType = 1, 'OPD', 'IPD') AS OpIpType, " &
@@ -116,32 +121,34 @@ Public Class FrmPtTypewiseDisc
                     table.Rows(i)("Sr.No") = i + 1
                 Next
 
-                ' Bind table to DataGridView
-                DataGridView1.DataSource = table
+                dgvPtTypeWiseDiscount.DataSource = table
 
                 ' Set display order and visibility of columns
-                DataGridView1.Columns("Sr.No").DisplayIndex = 0
-                DataGridView1.Columns("Id").Visible = False
-                DataGridView1.Columns("PtTypeId").Visible = False
-                DataGridView1.Columns("Sr.No").ReadOnly = True
+                dgvPtTypeWiseDiscount.Columns("Sr.No").DisplayIndex = 0
+                dgvPtTypeWiseDiscount.Columns("Id").Visible = False
+                dgvPtTypeWiseDiscount.Columns("PtTypeId").Visible = False
 
-                ' Adjust column widths
-                DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                dgvPtTypeWiseDiscount.Columns("Sr.No").ReadOnly = True
+                dgvPtTypeWiseDiscount.Columns("OpIpType").ReadOnly = True
+                dgvPtTypeWiseDiscount.Columns("PatientType").ReadOnly = True
+                dgvPtTypeWiseDiscount.Columns("Discount").ReadOnly = True
+                dgvPtTypeWiseDiscount.Columns("IsActive").ReadOnly = True
+
+                dgvPtTypeWiseDiscount.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
             End Try
         End Using
     End Sub
 
-
     Private selectedPtTypeId As Integer
-    Private Sub DataGridView1_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellClick
+    Private Sub dgvPtTypeWiseDiscount_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPtTypeWiseDiscount.CellClick
         If e.RowIndex >= 0 Then
-            Dim selectedRow As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
+            Dim selectedRow As DataGridViewRow = dgvPtTypeWiseDiscount.Rows(e.RowIndex)
 
             Dim ptTypeId As Object = selectedRow.Cells("PtTypeId").Value
             If ptTypeId IsNot Nothing AndAlso IsNumeric(ptTypeId) Then
-                ComboBoxPtType.SelectedValue = Convert.ToInt32(ptTypeId)
+                cmbPtTypeWiseDiscount.SelectedValue = Convert.ToInt32(ptTypeId)
             Else
                 MessageBox.Show("Invalid Patient Type ID.")
                 Return
@@ -152,11 +159,11 @@ Public Class FrmPtTypewiseDisc
             Dim opIpTypeValue As Object = selectedRow.Cells("OpIpType").Value
             If opIpTypeValue IsNot Nothing Then
                 If opIpTypeValue.ToString() = "OPD" Then
-                    RadioButtonOPD.Checked = True
-                    RadioButtonIPD.Checked = False
+                    rbtnOPD.Checked = True
+                    rbtnIPD.Checked = False
                 ElseIf opIpTypeValue.ToString() = "IPD" Then
-                    RadioButtonOPD.Checked = False
-                    RadioButtonIPD.Checked = True
+                    rbtnOPD.Checked = False
+                    rbtnIPD.Checked = True
                 End If
             End If
             Dim discountValue As Object = selectedRow.Cells("Discount").Value
@@ -164,10 +171,16 @@ Public Class FrmPtTypewiseDisc
                 txtDiscount.Text = Convert.ToString(discountValue)
             End If
 
+            ' Handle Active/Deactive checkbox selection
+            ' Handle Active/Deactive checkbox selection
             Dim isActiveValue As Object = selectedRow.Cells("IsActive").Value
-            If isActiveValue IsNot Nothing Then
-                CheckBoxActive.Checked = Convert.ToBoolean(isActiveValue)
-                CheckBoxDeactive.Checked = Not CheckBoxActive.Checked
+            If isActiveValue IsNot DBNull.Value Then
+                Dim isActive As Boolean = Convert.ToBoolean(isActiveValue)
+                chkIsActive.Checked = isActive
+                chkIsDeactive.Checked = Not isActive
+            Else
+                chkIsActive.Checked = False
+                chkIsDeactive.Checked = False
             End If
         End If
     End Sub
@@ -178,15 +191,18 @@ Public Class FrmPtTypewiseDisc
             MessageBox.Show("Please select a record to update.")
             Return
         End If
-
-        Dim opIpType As Boolean = RadioButtonOPD.Checked
+        If Not (chkIsActive.Checked Or chkIsDeactive.Checked) Then
+            MessageBox.Show("Please select at least one status: Active or Deactive.")
+            Return
+        End If
+        Dim opIpType As Boolean = rbtnOPD.Checked
 
         Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim cmd As New SqlCommand("UPDATE mst_PtTypeWiseDiscount SET PtTypeId = @PtTypeId, OpIpType = @OpIpType, Discount = @Discount WHERE Id = @Id", con)
 
             Dim ptTypeId As Integer
-            If ComboBoxPtType.SelectedValue IsNot Nothing Then
-                ptTypeId = Convert.ToInt32(ComboBoxPtType.SelectedValue)
+            If cmbPtTypeWiseDiscount.SelectedValue IsNot Nothing Then
+                ptTypeId = Convert.ToInt32(cmbPtTypeWiseDiscount.SelectedValue)
             Else
                 MessageBox.Show("Please select a valid PtType from the ComboBox.")
                 Return
@@ -208,7 +224,7 @@ Public Class FrmPtTypewiseDisc
 
                 If result > 0 Then
                     MessageBox.Show("Data updated successfully.")
-                    LoadDataGridView()
+                    LoadDgvPtTypeWiseDisc()
                 Else
                     MessageBox.Show("Data update failed.")
                 End If
@@ -218,15 +234,15 @@ Public Class FrmPtTypewiseDisc
         End Using
     End Sub
 
-    Private Sub CheckBoxActive_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxActive.CheckedChanged
-        If CheckBoxActive.Checked Then
-            CheckBoxDeactive.Checked = False
+    Private Sub CheckBoxActive_CheckedChanged(sender As Object, e As EventArgs) Handles chkIsActive.CheckedChanged
+        If chkIsActive.Checked Then
+            chkIsDeactive.Checked = False
         End If
     End Sub
 
-    Private Sub CheckBoxDeactive_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxDeactive.CheckedChanged
-        If CheckBoxDeactive.Checked Then
-            CheckBoxActive.Checked = False
+    Private Sub CheckBoxDeactive_CheckedChanged(sender As Object, e As EventArgs) Handles chkIsDeactive.CheckedChanged
+        If chkIsDeactive.Checked Then
+            chkIsActive.Checked = False
         End If
     End Sub
 
@@ -235,12 +251,12 @@ Public Class FrmPtTypewiseDisc
     End Sub
 
     Private Sub ClearFields()
-        ComboBoxPtType.SelectedIndex = -1
+        cmbPtTypeWiseDiscount.SelectedIndex = -1
         txtDiscount.Clear()
-        RadioButtonOPD.Checked = False
-        RadioButtonIPD.Checked = False
-        CheckBoxActive.Checked = False
-        CheckBoxDeactive.Checked = False
+        rbtnOPD.Checked = False
+        rbtnIPD.Checked = False
+        chkIsActive.Checked = True
+        chkIsDeactive.Checked = False
         selectedPtTypeId = 0
     End Sub
 
@@ -281,15 +297,15 @@ Public Class FrmPtTypewiseDisc
                     For i As Integer = 0 To table.Rows.Count - 1
                         table.Rows(i)("Sr.No") = i + 1
                     Next
-                    DataGridView1.DataSource = table
+                    dgvPtTypeWiseDiscount.DataSource = table
 
-                    DataGridView1.Columns("Sr.No").DisplayIndex = 0
-                    DataGridView1.Columns("Id").Visible = False
-                    DataGridView1.Columns("PtTypeId").Visible = False
-                    DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                    dgvPtTypeWiseDiscount.Columns("Sr.No").DisplayIndex = 0
+                    dgvPtTypeWiseDiscount.Columns("Id").Visible = False
+                    dgvPtTypeWiseDiscount.Columns("PtTypeId").Visible = False
+                    dgvPtTypeWiseDiscount.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
                 Else
                     MessageBox.Show("No matching records found.")
-                    DataGridView1.DataSource = Nothing
+                    dgvPtTypeWiseDiscount.DataSource = Nothing
                 End If
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)

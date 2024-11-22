@@ -4,10 +4,10 @@ Public Class FrmPatientType
     Private selectedPtTypeId As Integer
 
     Private Sub FrmPatientType_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        LoadDataGridView()
+        LoadDgvPtType()
 
         ' Set Active checkbox checked by default
-        CheckBoxActive.Checked = True
+        chkIsActive.Checked = True
     End Sub
 
 
@@ -16,9 +16,14 @@ Public Class FrmPatientType
             MessageBox.Show("Please fill in the PtType.")
             Return
         End If
+        ' Validate Active/Deactive selection
+        If Not (chkIsActive.Checked Or chkIsDeactive.Checked) Then
+            MessageBox.Show("Please select at least one status: Active or Deactive.")
+            Return
+        End If
 
         Dim ptTypeName As String = txtPtType.Text.Trim()
-        Dim isActive As Boolean = CheckBoxActive.Checked
+        Dim isActive As Boolean = chkIsActive.Checked
 
         Using con As SqlConnection = DatabaseHelper.GetConnection()
             Try
@@ -64,7 +69,7 @@ Public Class FrmPatientType
                     Dim result As Integer = insertCmd.ExecuteNonQuery()
                     If result >= 1 Then
                         MessageBox.Show("Data inserted successfully.")
-                        LoadDataGridView()
+                        LoadDgvPtType()
                     Else
                         MessageBox.Show("Data insertion failed.")
                     End If
@@ -78,8 +83,7 @@ Public Class FrmPatientType
         End Using
     End Sub
 
-
-    Private Sub LoadDataGridView()
+    Private Sub LoadDgvPtType()
         Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim query As String = "SELECT * FROM mst_PtType"
             Dim cmd As New SqlCommand(query, con)
@@ -96,11 +100,13 @@ Public Class FrmPatientType
                     table.Rows(i)("Sr.No") = i + 1
                 Next
 
-                DataGridView1.DataSource = table
-                DataGridView1.Columns("Sr.No").DisplayIndex = 0
-                DataGridView1.Columns("PtTypeId").Visible = False ' Hide the PtTypeId column
-                DataGridView1.Columns("Sr.No").ReadOnly = True ' Make Sr.No column read-only
-                DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                dgvPtType.DataSource = table
+                dgvPtType.Columns("Sr.No").DisplayIndex = 0
+                dgvPtType.Columns("PtTypeId").Visible = False ' Hide the PtTypeId column
+                dgvPtType.Columns("Sr.No").ReadOnly = True ' Make Sr.No column read-only
+                dgvPtType.Columns("PtType").ReadOnly = True
+                dgvPtType.Columns("IsActive").ReadOnly = True
+                dgvPtType.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
@@ -116,8 +122,8 @@ Public Class FrmPatientType
         txtPtType.Clear()
 
         ' Set Active checkbox checked by default
-        CheckBoxActive.Checked = True
-        CheckBoxDeactive.Checked = False
+        chkIsActive.Checked = True
+        chkIsDeactive.Checked = False
     End Sub
 
     Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
@@ -126,7 +132,12 @@ Public Class FrmPatientType
             Return
         End If
 
-        Dim isActive As Boolean = CheckBoxActive.Checked
+        If Not (chkIsActive.Checked Or chkIsDeactive.Checked) Then
+            MessageBox.Show("Please select at least one status: Active or Deactive.")
+            Return
+        End If
+
+        Dim isActive As Boolean = chkIsActive.Checked
         Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim cmd As New SqlCommand("UPDATE mst_PtType SET PtType = @PtType, IsActive = @IsActive WHERE PtTypeId = @PtTypeId", con)
             cmd.Parameters.AddWithValue("@PtType", txtPtType.Text)
@@ -139,7 +150,7 @@ Public Class FrmPatientType
 
                 If result > 0 Then
                     MessageBox.Show("Data updated successfully.")
-                    LoadDataGridView()
+                    LoadDgvPtType()
                 Else
                     MessageBox.Show("Data update failed.")
                 End If
@@ -149,14 +160,14 @@ Public Class FrmPatientType
         End Using
     End Sub
 
-    Private Sub DataGridView1_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellClick
+    Private Sub dgvPtType_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPtType.CellClick
         If e.RowIndex >= 0 Then
-            Dim selectedRow As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
+            Dim selectedRow As DataGridViewRow = dgvPtType.Rows(e.RowIndex)
             txtPtType.Text = selectedRow.Cells("PtType").Value.ToString()
             selectedPtTypeId = CInt(selectedRow.Cells("PtTypeId").Value)
             Dim isActive As Boolean = CBool(selectedRow.Cells("IsActive").Value)
-            CheckBoxActive.Checked = isActive
-            CheckBoxDeactive.Checked = Not isActive
+            chkIsActive.Checked = isActive
+            chkIsDeactive.Checked = Not isActive
         End If
     End Sub
 
@@ -164,15 +175,15 @@ Public Class FrmPatientType
         Me.Close()
     End Sub
 
-    Private Sub CheckBoxActive_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxActive.CheckedChanged
-        If CheckBoxActive.Checked Then
-            CheckBoxDeactive.Checked = False
+    Private Sub chkIsActive_CheckedChanged(sender As Object, e As EventArgs) Handles chkIsActive.CheckedChanged
+        If chkIsActive.Checked Then
+            chkIsDeactive.Checked = False
         End If
     End Sub
 
-    Private Sub CheckBoxDeactive_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxDeactive.CheckedChanged
-        If CheckBoxDeactive.Checked Then
-            CheckBoxActive.Checked = False
+    Private Sub chkIsDeactive_CheckedChanged(sender As Object, e As EventArgs) Handles chkIsDeactive.CheckedChanged
+        If chkIsDeactive.Checked Then
+            chkIsActive.Checked = False
         End If
     End Sub
 
@@ -201,13 +212,13 @@ Public Class FrmPatientType
                         table.Rows(i)("Sr.No") = i + 1
                     Next
 
-                    DataGridView1.DataSource = table
-                    DataGridView1.Columns("Sr.No").DisplayIndex = 0
-                    DataGridView1.Columns("PtTypeId").Visible = False
-                    DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                    dgvPtType.DataSource = table
+                    dgvPtType.Columns("Sr.No").DisplayIndex = 0
+                    dgvPtType.Columns("PtTypeId").Visible = False
+                    dgvPtType.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
                 Else
                     MessageBox.Show("No records found.")
-                    DataGridView1.DataSource = Nothing
+                    dgvPtType.DataSource = Nothing
                 End If
 
             Catch ex As Exception
@@ -216,7 +227,7 @@ Public Class FrmPatientType
         End Using
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub btnPtTypeWiseDisc_Click(sender As Object, e As EventArgs) Handles btnPtTypeWiseDisc.Click
         FrmPtTypewiseDisc.Show()
     End Sub
 End Class
