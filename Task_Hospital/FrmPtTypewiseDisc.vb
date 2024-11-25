@@ -61,28 +61,42 @@ Public Class FrmPtTypewiseDisc
             MessageBox.Show("Please select either OPD or IPD.")
             Return
         End If
+
         ' Validate Active/Deactive selection
         If Not (chkIsActive.Checked Or chkIsDeactive.Checked) Then
             MessageBox.Show("Please select at least one status: Active or Deactive.")
             Return
         End If
+
         ' Get selected values
         Dim selectedPtTypeId As Integer = CInt(cmbPtTypeWiseDiscount.SelectedValue)
         Dim isActive As Boolean = chkIsActive.Checked
         Dim opIpType As Boolean = rbtnOPD.Checked ' OPD is true, IPD is false
 
         Using con As SqlConnection = DatabaseHelper.GetConnection()
-            Dim query As String = "INSERT INTO mst_PtTypeWiseDiscount (OpIpType, PtTypeId, Discount, IsActive) VALUES (@OpIpType, @PtTypeId, @Discount, @IsActive)"
-            Dim cmd As New SqlCommand(query, con)
-
-            cmd.Parameters.AddWithValue("@OpIpType", opIpType)
-            cmd.Parameters.AddWithValue("@PtTypeId", selectedPtTypeId)
-            cmd.Parameters.AddWithValue("@Discount", discountValue)
-            cmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
+            ' Validate if the combination of OpIpType and PtTypeId already exists
+            Dim validationQuery As String = "SELECT COUNT(*) FROM mst_PtTypeWiseDiscount WHERE OpIpType = @OpIpType AND PtTypeId = @PtTypeId"
+            Dim validationCmd As New SqlCommand(validationQuery, con)
+            validationCmd.Parameters.AddWithValue("@OpIpType", opIpType)
+            validationCmd.Parameters.AddWithValue("@PtTypeId", selectedPtTypeId)
 
             Try
                 con.Open()
-                Dim result As Integer = cmd.ExecuteNonQuery()
+                Dim count As Integer = Convert.ToInt32(validationCmd.ExecuteScalar())
+                If count > 0 Then
+                    MessageBox.Show("The same PtType and Op-Ip Type combination already exists. Please use a unique combination.")
+                    Return
+                End If
+
+                ' If validation passes, insert the record
+                Dim insertQuery As String = "INSERT INTO mst_PtTypeWiseDiscount (OpIpType, PtTypeId, Discount, IsActive) VALUES (@OpIpType, @PtTypeId, @Discount, @IsActive)"
+                Dim insertCmd As New SqlCommand(insertQuery, con)
+                insertCmd.Parameters.AddWithValue("@OpIpType", opIpType)
+                insertCmd.Parameters.AddWithValue("@PtTypeId", selectedPtTypeId)
+                insertCmd.Parameters.AddWithValue("@Discount", discountValue)
+                insertCmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
+
+                Dim result As Integer = insertCmd.ExecuteNonQuery()
 
                 If result > 0 Then
                     MessageBox.Show("Data inserted successfully.")
@@ -92,9 +106,12 @@ Public Class FrmPtTypewiseDisc
                 End If
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
+            Finally
+                con.Close()
             End Try
         End Using
     End Sub
+
 
 
     Private Sub LoadDgvPtTypeWiseDisc()
@@ -145,7 +162,7 @@ Public Class FrmPtTypewiseDisc
     Private Sub dgvPtTypeWiseDiscount_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPtTypeWiseDiscount.CellClick
         If e.RowIndex >= 0 Then
             Dim selectedRow As DataGridViewRow = dgvPtTypeWiseDiscount.Rows(e.RowIndex)
-
+            btnUpdate.Enabled = True
             Dim ptTypeId As Object = selectedRow.Cells("PtTypeId").Value
             If ptTypeId IsNot Nothing AndAlso IsNumeric(ptTypeId) Then
                 cmbPtTypeWiseDiscount.SelectedValue = Convert.ToInt32(ptTypeId)
@@ -191,14 +208,17 @@ Public Class FrmPtTypewiseDisc
             MessageBox.Show("Please select a record to update.")
             Return
         End If
+
         If Not (chkIsActive.Checked Or chkIsDeactive.Checked) Then
             MessageBox.Show("Please select at least one status: Active or Deactive.")
             Return
         End If
+
         Dim opIpType As Boolean = rbtnOPD.Checked
 
         Using con As SqlConnection = DatabaseHelper.GetConnection()
-            Dim cmd As New SqlCommand("UPDATE mst_PtTypeWiseDiscount SET PtTypeId = @PtTypeId, OpIpType = @OpIpType, Discount = @Discount WHERE Id = @Id", con)
+            ' Validate for duplicate PtTypeId and OpIpType
+            Dim validationCmd As New SqlCommand("SELECT COUNT(*) FROM mst_PtTypeWiseDiscount WHERE PtTypeId = @PtTypeId AND OpIpType = @OpIpType AND Id <> @Id", con)
 
             Dim ptTypeId As Integer
             If cmbPtTypeWiseDiscount.SelectedValue IsNot Nothing Then
@@ -213,13 +233,28 @@ Public Class FrmPtTypewiseDisc
                 MessageBox.Show("Please enter a valid discount value.")
                 Return
             End If
-            cmd.Parameters.AddWithValue("@PtTypeId", ptTypeId)
-            cmd.Parameters.AddWithValue("@OpIpType", opIpType)
-            cmd.Parameters.AddWithValue("@Discount", discountValue)
-            cmd.Parameters.AddWithValue("@Id", selectedPtTypeId)
+
+            validationCmd.Parameters.AddWithValue("@PtTypeId", ptTypeId)
+            validationCmd.Parameters.AddWithValue("@OpIpType", opIpType)
+            validationCmd.Parameters.AddWithValue("@Id", selectedPtTypeId)
 
             Try
                 con.Open()
+
+                ' Execute validation query
+                Dim count As Integer = Convert.ToInt32(validationCmd.ExecuteScalar())
+                If count > 0 Then
+                    MessageBox.Show("The same PtType and Op-Ip Type combination already exists. Please use a unique combination.")
+                    Return
+                End If
+
+                ' Proceed with the update if validation passes
+                Dim cmd As New SqlCommand("UPDATE mst_PtTypeWiseDiscount SET PtTypeId = @PtTypeId, OpIpType = @OpIpType, Discount = @Discount WHERE Id = @Id", con)
+                cmd.Parameters.AddWithValue("@PtTypeId", ptTypeId)
+                cmd.Parameters.AddWithValue("@OpIpType", opIpType)
+                cmd.Parameters.AddWithValue("@Discount", discountValue)
+                cmd.Parameters.AddWithValue("@Id", selectedPtTypeId)
+
                 Dim result As Integer = cmd.ExecuteNonQuery()
 
                 If result > 0 Then
@@ -228,11 +263,15 @@ Public Class FrmPtTypewiseDisc
                 Else
                     MessageBox.Show("Data update failed.")
                 End If
+
             Catch ex As Exception
                 MessageBox.Show("An error occurred: " & ex.Message)
+            Finally
+                con.Close()
             End Try
         End Using
     End Sub
+
 
     Private Sub CheckBoxActive_CheckedChanged(sender As Object, e As EventArgs) Handles chkIsActive.CheckedChanged
         If chkIsActive.Checked Then
@@ -248,6 +287,7 @@ Public Class FrmPtTypewiseDisc
 
     Private Sub btnNew_Click(sender As Object, e As EventArgs) Handles btnNew.Click
         ClearFields()
+        btnUpdate.Enabled = False
     End Sub
 
     Private Sub ClearFields()
@@ -267,10 +307,10 @@ Public Class FrmPtTypewiseDisc
     Private Sub btnSearchPtType_Click(sender As Object, e As EventArgs) Handles btnSearchPtType.Click
         Dim searchText As String = txtSearchPtType.Text.Trim()
 
-        If String.IsNullOrWhiteSpace(searchText) Then
-            MessageBox.Show("Please enter a search term.")
-            Return
-        End If
+        'If String.IsNullOrWhiteSpace(searchText) Then
+        'MessageBox.Show("Please enter a search term.")
+        'Return
+        'End If
 
         Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim query As String = "SELECT d.Id, " &

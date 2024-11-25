@@ -116,6 +116,8 @@ Public Class FrmPatientType
 
     Private Sub btnNew_Click(sender As Object, e As EventArgs) Handles btnNew.Click
         ClearFields()
+        ' Disable the Update button
+        btnUpdate.Enabled = False
     End Sub
 
     Private Sub ClearFields()
@@ -132,21 +134,47 @@ Public Class FrmPatientType
             Return
         End If
 
+        If String.IsNullOrWhiteSpace(txtPtType.Text) Then
+            MessageBox.Show("PtType cannot be empty.")
+            Return
+        End If
+
         If Not (chkIsActive.Checked Or chkIsDeactive.Checked) Then
             MessageBox.Show("Please select at least one status: Active or Deactive.")
             Return
         End If
 
         Dim isActive As Boolean = chkIsActive.Checked
+
+        ' Validate if the same PtType already exists
         Using con As SqlConnection = DatabaseHelper.GetConnection()
-            Dim cmd As New SqlCommand("UPDATE mst_PtType SET PtType = @PtType, IsActive = @IsActive WHERE PtTypeId = @PtTypeId", con)
-            cmd.Parameters.AddWithValue("@PtType", txtPtType.Text)
-            cmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
-            cmd.Parameters.AddWithValue("@PtTypeId", selectedPtTypeId)
+            Dim checkCmd As New SqlCommand("SELECT COUNT(*) FROM mst_PtType WHERE PtType = @PtType AND PtTypeId <> @PtTypeId", con)
+            checkCmd.Parameters.AddWithValue("@PtType", txtPtType.Text)
+            checkCmd.Parameters.AddWithValue("@PtTypeId", selectedPtTypeId)
 
             Try
                 con.Open()
-                Dim result As Integer = cmd.ExecuteNonQuery()
+                Dim count As Integer = Convert.ToInt32(checkCmd.ExecuteScalar())
+                If count > 0 Then
+                    MessageBox.Show("The same PtType already exists. Please enter a unique PtType.")
+                    Return
+                End If
+            Catch ex As Exception
+                MessageBox.Show("An error occurred while validating PtType: " & ex.Message)
+                Return
+            End Try
+        End Using
+
+        ' Proceed with the update
+        Using con As SqlConnection = DatabaseHelper.GetConnection()
+            Dim updateCmd As New SqlCommand("UPDATE mst_PtType SET PtType = @PtType, IsActive = @IsActive WHERE PtTypeId = @PtTypeId", con)
+            updateCmd.Parameters.AddWithValue("@PtType", txtPtType.Text)
+            updateCmd.Parameters.AddWithValue("@IsActive", If(isActive, 1, 0))
+            updateCmd.Parameters.AddWithValue("@PtTypeId", selectedPtTypeId)
+
+            Try
+                con.Open()
+                Dim result As Integer = updateCmd.ExecuteNonQuery()
 
                 If result > 0 Then
                     MessageBox.Show("Data updated successfully.")
@@ -160,6 +188,7 @@ Public Class FrmPatientType
         End Using
     End Sub
 
+
     Private Sub dgvPtType_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPtType.CellClick
         If e.RowIndex >= 0 Then
             Dim selectedRow As DataGridViewRow = dgvPtType.Rows(e.RowIndex)
@@ -168,6 +197,8 @@ Public Class FrmPatientType
             Dim isActive As Boolean = CBool(selectedRow.Cells("IsActive").Value)
             chkIsActive.Checked = isActive
             chkIsDeactive.Checked = Not isActive
+            ' Enable the Update button
+            btnUpdate.Enabled = True
         End If
     End Sub
 
@@ -190,10 +221,10 @@ Public Class FrmPatientType
     Private Sub btnSearchPtType_Click(sender As Object, e As EventArgs) Handles btnSearchPtType.Click
         Dim searchText As String = txtSearchPtType.Text.Trim()
 
-        If String.IsNullOrWhiteSpace(searchText) Then
-            MessageBox.Show("Please enter a search term.")
-            Return
-        End If
+        'If String.IsNullOrWhiteSpace(searchText) Then
+        'MessageBox.Show("Please enter a search term.")
+        'Return
+        'End If
 
         Using con As SqlConnection = DatabaseHelper.GetConnection()
             Dim query As String = "SELECT * FROM mst_PtType WHERE PtType LIKE @searchText"
